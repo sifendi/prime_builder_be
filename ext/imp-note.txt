@@ -1,0 +1,6 @@
+If we have to add new SDK then we should have to use Prefix in $EAPLoopBackSDK$
+
+Path :-  D:\eap_dashboard\holcim_eap_dash\src\shared\loopback_sdk\services\core\auth.service.ts
+
+
+In index.html we have declare this prefix using variable "sdkPrefix" and use it in different sdk..

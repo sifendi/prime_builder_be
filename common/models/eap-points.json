@@ -1,0 +1,44 @@
+{
+  "name": "eap_points",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "point_id": {
+      "type": "number"
+    },
+    "user_id": {
+      "type": "number"
+    },
+    "activity_type_id": {
+      "type": "number"
+    },
+    "activity_type": {
+      "type": "string"
+    },
+    "points": {
+      "type": "number"
+    },
+    "created_date": {
+      "type": "number"
+    },
+    "created_by": {
+      "type": "number"
+    },
+    "updated_date": {
+      "type": "number"
+    },
+    "updated_by": {
+      "type": "number"
+    },
+    "status": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

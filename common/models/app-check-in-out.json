@@ -1,0 +1,87 @@
+{
+  "name": "app_check_in_out",
+  "plural": "app_check_in_out",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "mssql": {
+      "schema": "dbo",
+      "table": "check_in_out_tbl"
+    }
+  },
+  "properties": {
+    "check_in_out_id": {
+      "type": "number",
+      "id": 1
+    },
+    "check_in_out_user_id": {
+      "type": "number"
+    },
+    "check_in_out_type": {
+      "type": "string"
+    },
+    "check_in_out_type_id": {
+      "type": "number"
+    },
+    "check_in_latitude": {
+      "type": "string"
+    },
+    "check_in_longitude": {
+      "type": "string"
+    },
+    "check_out_latitude": {
+      "type": "string"
+    },
+    "check_out_longitude": {
+      "type": "string"
+    },
+    "check_in_datetime": {
+      "type": "number"
+    },
+    "check_out_datetime": {
+      "type": "number"
+    },
+    "generated_by": {
+      "type": "number"
+    },
+    "assigned_to": {
+      "type": "number"
+    },
+    "check_in_out_comment": {
+      "type": "string"
+    },
+    "status": {
+      "type": "number"
+    },
+    "local_created_date": {
+      "type": "number"
+    },
+    "local_updated_date": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$byzantineapi",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}

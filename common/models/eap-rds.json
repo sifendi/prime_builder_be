@@ -1,0 +1,90 @@
+{
+  "name": "eapRds",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": {
+      "type": "number",
+      "id": 1
+    },
+    "holcim_id": {
+      "type": {
+        "holcim_id": "string"
+      }
+    },
+    "rds_name": {
+      "type": "string"
+    },
+    "rds_mobile": {
+      "type": "string"
+    },
+    "rds_phone": {
+      "type": "string"
+    },
+    "rds_email": {
+      "type": "string"
+    },
+    "rds_gender": {
+      "type": "string"
+    },
+    "rds_type": {
+      "type": "string"
+    },
+    "rds_address": {
+      "type": "string"
+    },
+    "rds_province": {
+      "type": "string"
+    },
+    "rds_city": {
+      "type": "string"
+    },
+    "rds_sub_district": {
+      "type": "string"
+    },
+    "rds_postalcode": {
+      "type": "number"
+    },
+    "rds_status": {
+      "type": "number"
+    },
+    "created_by": {
+      "type": "number"
+    },
+    "created_date": {
+      "type": "number"
+    },
+    "updated_by": {
+      "type": "number"
+    },
+    "updated_date": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$byzantineapi",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}

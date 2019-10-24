@@ -1,0 +1,366 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins",
+      "./mixins"
+    ]
+  },
+  "Email": {
+    "dataSource": "myEmailDataSource"
+  },
+  "User": {
+    "dataSource": "accountDS",
+    "public": false
+  },
+  "user": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "userinfo": {
+    "dataSource": "accountDS",
+    "public": false
+  },
+  "userinfohpb": {
+    "dataSource": "accountDS",
+    "public": false
+  },
+  "userinfometa": {
+    "dataSource": "accountDS",
+    "public": false
+  },
+  "AccessToken": {
+    "dataSource": "accountDS",
+    "public": false
+  },
+  "ACL": {
+    "dataSource": "accountDS",
+    "public": false
+  },
+  "RoleMapping": {
+    "dataSource": "accountDS",
+    "public": false,
+    "options": {
+      "strictObjectIDCoercion": true
+    }
+  },
+  "Role": {
+    "dataSource": "accountDS",
+    "public": false
+  },
+  "dyd": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_hpb": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "container": {
+    "dataSource": "storage",
+    "public": true
+  },
+  "app_login": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_projects": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_rds": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_area": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_rds_visit": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_products": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_taxonomy_term_data": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_taxonomy_vocabulary": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_taxonomy_meta": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_check_in_out": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_rds_stock": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_product_receipt": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_product_receipt_approval": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "region": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "province": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "district": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "municipality": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "subdistrict": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "village": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "postal_code": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "project_stage": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "project_type": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "nmc": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "brand": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_users": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_product_request": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "reward": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "wish": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "promo": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "rewardClaim": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "rewardPoint": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "app_srku_approval": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "monthly_actual_target": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "monthly_visiting_schedule": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "monthly_forecast_target": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "monthly_stats": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "products_request_brand_capture_tbl": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "user_mapping": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "cement_bag_removals_tbl": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "dr_log": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "reward_promos": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "reward_category": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_master_directorate": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_master_department": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_master_lead_segment": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_lead": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_employee_points": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_refer_customer": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_share_moments": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_approval": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_lead_invoice": {
+    "dataSource": "db",
+    "public": true
+  },
+  "eap_support_chat": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_master_social_media": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "user_meta": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "retrieve_created_by": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "application": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "installation": {
+    "dataSource": "accountDS",
+    "public": false
+  },
+  "notification": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "push": {
+    "dataSource": "push",
+    "public": true
+  },
+  "app_notification_center": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "user_map": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eapRds": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_points": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_support_contacts": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_support_assignment": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_master_points": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_user_update_approval": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "eap_report": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "hpb_update_approval": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "gps_login": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "dashboard_api": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "hpb_byz_data": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "hpb_reward_redemption": {
+    "dataSource": "accountDS",
+    "public": true
+  },
+  "update_hpb_point": {
+    "dataSource": "accountDS",
+    "public": true
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
+  "accountDS": {
+    "host": "holcim-prod.c9qcbfm9f5y0.ap-southeast-1.rds.amazonaws.com",
+    "port": 1433,
+    "url": "",
+    "database": "holcim_hpb2",
+    "password": "=G|[7j?e",
+    "name": "accountDS",
+    "user": "holcim",
+    "connector": "mssql"
+  },
+  "storage": {
+    "name": "storage",
+    "connector": "loopback-component-storage",
+    "provider": "filesystem",
+    "root_": "server/storage",
+    "root": "G:/HIRENDRA/E drive/Apps/holcim_hpb_api/server/storage",
+    "allowedContentTypes": [
+      "image/gif",
+      "image/jpeg",
+      "image/png",
+      "application/pdf",
+      "text/csv",
+      "application/vnd.ms-excel",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ]
+  },
+  "push": {
+    "name": "push",
+    "connector": "loopback-component-push",
+    "installation": "installation",
+    "notification": "notification",
+    "application": "application"
+  },
+  "myEmailDataSource": {
+    "name": "myEmailDataSource",
+    "connector": "mail",
+    "transports": [
+      {
+        "type": "SMTP",
+        "host": "mail.primebuilder.id",
+        "secure": false,
+        "port": 25,
+        "auth": {
+          "user": "support@primebuilder.id",
+          "pass": "q3ZVbAqV"
+        }
+      }
+    ]
+  }
+}

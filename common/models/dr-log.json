@@ -1,0 +1,44 @@
+{
+  "name": "dr_log",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "dr_id": {
+      "type": "number",
+      "id": 1
+    },
+    "userid": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "sender": {
+      "type": "string"
+    },
+    "messageId": {
+      "type": "number"
+    },
+    "delivery_status": {
+      "type": "number"
+    },
+    "date_hit": {
+      "type": "string"
+    },
+    "date_received": {
+      "type": "string"
+    },
+    "created_date": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [
+    
+  ],
+  "methods": {}
+}

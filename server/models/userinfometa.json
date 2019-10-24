@@ -1,0 +1,35 @@
+{
+  "name": "userinfometa",
+  "plural": "userinfometa",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "mssql": {
+      "schema": "dbo",
+      "table": "user_mapping"
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "number",
+      "id": 1
+    },
+    "uid": {
+      "type": "number"
+    },
+    "meta_key": {
+      "type": "string"
+    },
+    "meta_value": {
+      "type": "string"
+    },
+    "status": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

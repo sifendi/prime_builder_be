@@ -1,0 +1,78 @@
+{
+  "name": "hpb_update_approval",
+  "plural": "hpb_update_approval",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "mssql": {
+      "dbo": "schema",
+      "table": "hpb_update_approval"
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "number",
+      "required": true
+    },
+    "hpb_id": {
+      "type": "number",
+      "required": true
+    },
+    "field_name": {
+      "type": "string",
+      "required": true
+    },
+    "field_old_value": {
+      "type": "string",
+      "required": true
+    },
+    "field_new_value": {
+      "type": "string",
+      "required": true
+    },
+    "approval_status": {
+      "type": "number",
+      "required": true,
+      "default": 0
+    },
+    "is_closed": {
+      "type": "number",
+      "required": true
+    },
+    "created_by": {
+      "type": "number"
+    },
+    "updated_by": {
+      "type": "number",
+      "required": true
+    },
+	"approved_by": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$byzantineapi",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}

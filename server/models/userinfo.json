@@ -1,0 +1,54 @@
+{
+  "name": "userinfo",
+  "plural": "userinfo",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "mssql": {
+      "schema": "dbo",
+      "table": "user_info_tbl"
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "number",
+      "id": 1
+    },
+    "uid": {
+      "type": "number",
+      "required": true
+    },
+    "name": {
+      "type": "string"
+    },
+    "mobile": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "gender": {
+      "type": "string"
+    },
+    "dob": {
+      "type": "number"
+    },
+    "created_date": {
+      "type": "number"
+    },
+    "updated_date": {
+      "type": "number"
+    },
+    "created_by": {
+      "type": "number"
+    },
+    "updated_by": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

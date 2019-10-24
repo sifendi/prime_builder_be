@@ -1,0 +1,24 @@
+{
+  "restApiRoot": "/api",
+  "host": "0.0.0.0",
+  "port": 9000,
+  "dashboardUrl": "https://hpb-id.hssanet.com/dashboard/#/",
+  "eapdashboardUrl": "https://hpb-id.hssanet.com/eap_dashboard/#/",
+  "remoting": {
+    "context": false,
+    "rest": {
+      "handleErrors": false,
+      "normalizeHttpPath": false,
+      "xml": false
+    },
+    "json": {
+      "strict": false,
+      "limit": "100mb"
+    },
+    "urlencoded": {
+      "extended": true,
+      "limit": "100mb"
+    },
+    "cors": false
+  }
+}

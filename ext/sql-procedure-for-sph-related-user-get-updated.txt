@@ -1,0 +1,159 @@
+
+CREATE PROCEDURE [dbo].[relatedUserFetchTest]
+    @uid int 
+AS
+BEGIN
+   DECLARE @roleName varchar(50);
+   SELECT @roleName = rl.name FROM Role rl JOIN RoleMapping rm ON rl.id=rm.roleId WHERE RM.principalId=@uid;
+   IF @roleName='$sph'
+     BEGIN 
+		SELECT DISTINCT  usr.id,usmp.uid,usr.realm, usr.username,usr.email, rl.name AS 'rolename' FROM [User] usr 
+		JOIN RoleMapping rm ON usr.id=rm.principalId 
+		JOIN Role rl ON rm.roleId=rl.id 
+		JOIN user_mapping usmp ON usr.id=usmp.uid 
+		JOIN postal_code pcd ON usmp.meta_value = pcd.id
+		JOIN subdistrict sud ON pcd.subdistrict_id=sud.id
+		JOIN municipality mup ON sud.municipality_id=mup.id
+		JOIN district dist ON mup.district_id=dist.id
+		JOIN province prov ON dist.province_id=prov.id
+		JOIN region reg ON prov.region_id=reg.id
+		WHERE 
+		(
+		usmp.meta_key = 'subdistrict_id' and usmp.meta_value in ( select subdistrict_id from postal_code where id in ( select meta_value from user_mapping where uid = @uid and meta_key = 'postal_code' ) )
+		OR
+		(usmp.meta_key = 'district_id' and usmp.meta_value in ( select district_id from municipality where id  in  ( select municipality_id from subdistrict where id in  (select subdistrict_id from postal_code where id in (select meta_value from user_mapping where uid = @uid  and meta_key = 'postal_code')) ) ) )
+		OR
+		(usmp.meta_key = 'region_id' and usmp.meta_value  in  ( select region_id from province where id in (select province_id from district where id in  ( select district_id from municipality where id  in  ( select municipality_id from subdistrict where id in  (select subdistrict_id from postal_code where id in (select meta_value from user_mapping where uid = @uid and meta_key = 'postal_code')) ) ) ) ) ) 
+		 )
+		AND ( rl.name='$tlh' or rl.name='$ac' or rl.name='$am' or rl.name='$ra') AND usr.status=1;
+	 END ; 
+   ELSE
+	   BEGIN  
+		  IF @roleName='$tlh'  
+				SELECT DISTINCT  usr.id,usmp.uid,usr.realm, usr.username,usr.email, rl.name AS 'rolename' FROM [User] usr 
+				JOIN RoleMapping rm ON usr.id=rm.principalId 
+				JOIN Role rl ON rm.roleId=rl.id 
+				JOIN user_mapping usmp ON usr.id=usmp.uid 
+				JOIN postal_code pcd ON usmp.meta_value = pcd.id
+				JOIN subdistrict sud ON pcd.subdistrict_id=sud.id
+				JOIN municipality mup ON sud.municipality_id=mup.id
+				JOIN district dist ON mup.district_id=dist.id
+				JOIN province prov ON dist.province_id=prov.id
+				JOIN region reg ON prov.region_id=reg.id
+				WHERE 
+				(
+				usmp.meta_key = 'postal_code' and usmp.meta_value in ( select id from postal_code where subdistrict_id in ( select meta_value from user_mapping where uid = @uid and meta_key = 'subdistrict_id' ) )
+				OR
+				(usmp.meta_key = 'district_id' and usmp.meta_value in ( select district_id from municipality where id  in  ( select municipality_id from subdistrict where id in   (select meta_value from user_mapping where uid = @uid  and meta_key = 'subdistrict_id')) ) ) 
+				OR
+				(usmp.meta_key = 'region_id' and usmp.meta_value  in  ( select region_id from province where id in (select province_id from district where id in  ( select district_id from municipality where id  in  ( select municipality_id from subdistrict where id in  (select meta_value from user_mapping where uid = @uid and meta_key = 'subdistrict_id')) ) ) ) ) 
+				)
+				AND ( rl.name='$sph' or rl.name='$ac' or rl.name='$am' or rl.name='$ra' ) AND usr.status=1;
+		  ELSE  
+			  BEGIN  
+			  IF @roleName='$ac'  
+					SELECT DISTINCT  usr.id,usmp.uid,usr.realm, usr.username,usr.email, rl.name AS 'rolename' FROM [User] usr 
+					JOIN RoleMapping rm ON usr.id=rm.principalId 
+					JOIN Role rl ON rm.roleId=rl.id 
+					JOIN user_mapping usmp ON usr.id=usmp.uid 
+					JOIN postal_code pcd ON usmp.meta_value = pcd.id
+					JOIN subdistrict sud ON pcd.subdistrict_id=sud.id
+					JOIN municipality mup ON sud.municipality_id=mup.id
+					JOIN district dist ON mup.district_id=dist.id
+					JOIN province prov ON dist.province_id=prov.id
+					JOIN region reg ON prov.region_id=reg.id 
+					WHERE 
+					(
+					usmp.meta_key = 'postal_code' and usmp.meta_value in ( select id from postal_code where subdistrict_id in  ( select id from subdistrict where municipality_id  in  ( select id from municipality where district_id in   (select meta_value from user_mapping where uid = @uid  and meta_key = 'district_id')) ))
+					OR
+					(usmp.meta_key = 'subdistrict_id' and usmp.meta_value in (select id from subdistrict where municipality_id  in    ( select id from municipality where district_id in   (select meta_value from user_mapping where uid = @uid  and meta_key = 'district_id')) ))
+					OR
+					(usmp.meta_key = 'region_id' and usmp.meta_value  in  ( select region_id from province where id in (select province_id from district where id in  (select meta_value from user_mapping where uid = @uid and meta_key = 'district_id')) ) )  ) AND ( rl.name='$sph' or rl.name='$tlh' or rl.name='$am' or rl.name='$ra') AND usr.status=1; 
+		   ELSE  
+
+		   		 BEGIN  
+			  	 IF @roleName='$hpb' 
+				  	BEGIN
+						declare @sphuid int;
+						SELECT	TOP 1 @sphuid=hit.created_by from [User] usr JOIN hpb_info_tbl hit ON usr.id=hit.uid WHERE usr.id=@uid;
+						set @uid=@sphuid;
+						SELECT DISTINCT  usr.id,usmp.uid,usr.realm, usr.username,usr.email, rl.name AS 'rolename' FROM [User] usr 
+						JOIN RoleMapping rm ON usr.id=rm.principalId 
+						JOIN Role rl ON rm.roleId=rl.id 
+						JOIN user_mapping usmp ON usr.id=usmp.uid 
+						JOIN postal_code pcd ON usmp.meta_value = pcd.id
+						JOIN subdistrict sud ON pcd.subdistrict_id=sud.id
+						JOIN municipality mup ON sud.municipality_id=mup.id
+						JOIN district dist ON mup.district_id=dist.id
+						JOIN province prov ON dist.province_id=prov.id
+						JOIN region reg ON prov.region_id=reg.id
+						WHERE 
+						(
+						usmp.meta_key = 'subdistrict_id' and usmp.meta_value in ( select subdistrict_id from postal_code where id in ( select meta_value from user_mapping where uid = @uid and meta_key = 'postal_code' ) )
+						OR
+						(usmp.meta_key = 'district_id' and usmp.meta_value in ( select district_id from municipality where id  in  ( select municipality_id from subdistrict where id in  (select subdistrict_id from postal_code where id in (select meta_value from user_mapping where uid = @uid  and meta_key = 'postal_code')) ) ) )
+						OR
+						(usmp.meta_key = 'region_id' and usmp.meta_value  in  ( select region_id from province where id in (select province_id from district where id in  ( select district_id from municipality where id  in  ( select municipality_id from subdistrict where id in  (select subdistrict_id from postal_code where id in (select meta_value from user_mapping where uid = @uid and meta_key = 'postal_code')) ) ) ) ) )
+						OR
+						usr.id=@uid  
+						)
+						AND ( rl.name='$sph' or rl.name='$tlh' or rl.name='$ac' or rl.name='$am' or rl.name='$ra') AND usr.status=1; 
+				  	END ;
+				 ELSE
+					BEGIN  
+					IF @roleName='$am' 
+					BEGIN
+						SELECT DISTINCT  usr.id,usmp.uid,usr.realm, usr.username,usr.email, rl.name AS 'rolename' FROM [User] usr 
+						JOIN RoleMapping rm ON usr.id=rm.principalId 
+						JOIN Role rl ON rm.roleId=rl.id 
+						JOIN user_mapping usmp ON usr.id=usmp.uid 
+						JOIN postal_code pcd ON usmp.meta_value = pcd.id
+						JOIN subdistrict sud ON pcd.subdistrict_id=sud.id
+						JOIN municipality mup ON sud.municipality_id=mup.id
+						JOIN district dist ON mup.district_id=dist.id
+						JOIN province prov ON dist.province_id=prov.id
+						JOIN region reg ON prov.region_id=reg.id 
+						WHERE 
+						(
+						usmp.meta_key = 'postal_code' and usmp.meta_value in ( select id from postal_code where subdistrict_id in  ( select id from subdistrict where municipality_id  in  ( select id from municipality where district_id in    ( select id from district where province_id in  (select id from province where region_id in  (select meta_value from user_mapping where uid = @uid and meta_key = 'region_id')))  ) ))
+						OR
+						(usmp.meta_key = 'subdistrict_id' and usmp.meta_value in (select id from subdistrict where municipality_id  in    ( select id from municipality where district_id in   ( select id from district where province_id in  (select id from province where region_id in  (select meta_value from user_mapping where uid = @uid and meta_key = 'region_id')))  ) ))
+						OR
+						(usmp.meta_key = 'district_id' and usmp.meta_value  in  ( select id from district where province_id in  (select id from province where region_id in  (select meta_value from user_mapping where uid = @uid and meta_key = 'region_id'))) ) ) 
+						OR
+						(usmp.meta_key = 'region_id' and usmp.meta_value  in  (select meta_value from user_mapping where uid = @uid and meta_key = 'region_id' ))
+						AND ( rl.name='$sph' or rl.name='$tlh' or rl.name='$ac' or rl.name='$ra') AND usr.status=1; 
+				 	  END ;
+				 ELSE
+					BEGIN  
+					IF @roleName='$ra' 
+						BEGIN
+							SELECT DISTINCT  usr.id,usmp.uid,usr.realm, usr.username,usr.email, rl.name AS 'rolename' FROM [User] usr 
+							JOIN RoleMapping rm ON usr.id=rm.principalId 
+							JOIN Role rl ON rm.roleId=rl.id 
+							JOIN user_mapping usmp ON usr.id=usmp.uid 
+							JOIN postal_code pcd ON usmp.meta_value = pcd.id
+							JOIN subdistrict sud ON pcd.subdistrict_id=sud.id
+							JOIN municipality mup ON sud.municipality_id=mup.id
+							JOIN district dist ON mup.district_id=dist.id
+							JOIN province prov ON dist.province_id=prov.id
+							JOIN region reg ON prov.region_id=reg.id 
+							WHERE 
+							(
+							usmp.meta_key = 'postal_code' and usmp.meta_value in ( select id from postal_code where subdistrict_id in  ( select id from subdistrict where municipality_id  in  ( select id from municipality where district_id in    ( select id from district where province_id in  (select id from province where region_id in  (select meta_value from user_mapping where uid = @uid and meta_key = 'region_id')))  ) ))
+							OR
+							(usmp.meta_key = 'subdistrict_id' and usmp.meta_value in (select id from subdistrict where municipality_id  in    ( select id from municipality where district_id in   ( select id from district where province_id in  (select id from province where region_id in  (select meta_value from user_mapping where uid = @uid and meta_key = 'region_id')))  ) ))
+							OR
+							(usmp.meta_key = 'district_id' and usmp.meta_value  in  ( select id from district where province_id in  (select id from province where region_id in  (select meta_value from user_mapping where uid = @uid and meta_key = 'region_id'))) ) ) 
+							OR
+							(usmp.meta_key = 'region_id' and usmp.meta_value  in  (select meta_value from user_mapping where uid = @uid and meta_key = 'region_id' ) )
+							AND ( rl.name='$sph' or rl.name='$tlh' or rl.name='$ac' or rl.name='$am') AND usr.status=1; 
+						 END ;
+				 	 ELSE
+				 	  PRINT 'this for only  not others';  
+					END ;
+				 END ;
+		   END ;
+	END ;
+END ;
+END ;

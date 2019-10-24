@@ -1,0 +1,84 @@
+{
+  "name": "app_products",
+  "plural": "app_products",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true,
+    "mssql": {
+      "schema": "dbo",
+      "table": "products_tbl"
+    }
+  },
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "unit_value": {
+      "type": "number"
+    },
+    "points": {
+      "type": "string"
+    },
+    "cash": {
+      "type": "string"
+    },
+    "req_ac_approv_qty": {
+      "type": "number"
+    },
+    "status": {
+      "type": "number"
+    },
+    "is_cement": {
+      "type": "number"
+    },
+    "created_date": {
+      "type": "number",
+      "required": false
+    },
+    "created_by": {
+      "type": "number",
+      "required": false
+    },
+    "updated_date": {
+      "type": "number",
+      "required": false
+    },
+    "updated_by": {
+      "type": "number",
+      "required": false
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$byzantineapi",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}

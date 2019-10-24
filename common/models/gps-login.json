@@ -1,0 +1,53 @@
+{
+  "name": "gps_login",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "user_id": {
+      "type": "number"
+    },
+    "high_accuracy": {
+      "type": "string"
+    },
+    "low_accuracy": {
+      "type": "string"
+    },
+    "timestamp_before_position": {
+      "type": "string"
+    },
+    "timestamp_after_position": {
+      "type": "string"
+    },
+    "time_acquire_position": {
+      "type": "string"
+    },
+    "network_type": {
+      "type": "string"
+    },
+    "network_strength": {
+      "type": "string"
+    },
+    "gps_accuracy": {
+      "type": "string"
+    },
+    "mobile_os_version": {
+      "type": "string"
+    },
+    "device_name": {
+      "type": "string"
+    },
+    "device_hardware": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

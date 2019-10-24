@@ -1,0 +1,70 @@
+{
+  "name": "monthly_actual_target",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "sph_id": {
+      "type": "number"
+    },
+    "postal_code": {
+      "type": "number"
+    },
+    "target_month": {
+      "type": "number"
+    },
+    "target_year": {
+      "type": "number"
+    },
+    "target_label": {
+      "type": "string"
+    },
+    "target_value": {
+      "type": "string"
+    },
+    "status": {
+      "type": "number"
+    },
+    "created_by": {
+      "type": "number"
+    },
+    "created_date": {
+      "type": "number"
+    },
+    "updated_by": {
+      "type": "number"
+    },
+    "updated_date": {
+      "type": "number"
+    },
+    "target_id": {
+      "type": "number",
+      "id": 1
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$byzantineapi",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}

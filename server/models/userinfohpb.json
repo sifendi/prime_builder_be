@@ -1,0 +1,41 @@
+{
+  "name": "userinfohpb",
+  "plural": "userinfohpb",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "mssql": {
+      "schema": "dbo",
+      "table": "hpb_info_tbl"
+    }
+  },
+  "properties": {
+    "hpb_id": {
+      "type": "number",
+      "id": 1
+    },
+    "uid": {
+      "type": "number"
+    },
+    "hpb_name": {
+      "type": {}
+    },
+    "hpb_type": {
+      "type": "string"
+    },
+    "primary_mobile_no": {
+      "type": "string"
+    },
+    "hpb_profile_pic": {
+      "type": "string"
+    },
+    "hpb_email": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
