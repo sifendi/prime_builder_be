@@ -4,13 +4,13 @@
     "connector": "memory"
   },
   "accountDS": {
-    "host": "holcim-prod.c9qcbfm9f5y0.ap-southeast-1.rds.amazonaws.com",
+    "host": "10.15.202.52",
     "port": 1433,
     "url": "",
-    "database": "holcim_hpb2",
-    "password": "=G|[7j?e",
+    "database": "holcim_hpb2_dev",
+    "password": "Indonesia1",
     "name": "accountDS",
-    "user": "holcim",
+    "user": "accountDS",
     "connector": "mssql"
   },
   "storage": {
@@ -18,7 +18,7 @@
     "connector": "loopback-component-storage",
     "provider": "filesystem",
     "root_": "server/storage",
-    "root": "G:/HIRENDRA/E drive/Apps/holcim_hpb_api/server/storage",
+    "root": "D:/APP/LOOPBACK/prime_builder_be/server/storage",
     "allowedContentTypes": [
       "image/gif",
       "image/jpeg",
