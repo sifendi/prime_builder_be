@@ -282,6 +282,7 @@ module.exports = function(Projects) {
 			sqlQuery+=" AND p.updated_date > (?) ";
 			dataArr.push(updated_date);
 		}
+
 		Projects.app.dbConnection.execute(sqlQuery,dataArr,(err,resultObj)=>{
 			var srkuProj = 0;
 			var totalProj = 0;
@@ -459,6 +460,7 @@ module.exports = function(Projects) {
 			dataArr.push(offset);
 			dataArr.push(limit);
 		}
+		console.log('query',sqlQuery);
 		
 		Projects.app.dbConnection.execute(sqlQuery,dataArr,(err,resultObj)=>{
 			var dataLength = resultObj.length;

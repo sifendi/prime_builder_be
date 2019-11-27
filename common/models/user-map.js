@@ -485,7 +485,7 @@ module.exports = function(Usermap) {
 				resolve(true);
 			}else{
 				// console.log('checkMappingUserQuery',checkMappingUserQuery);
-				//console.log('mIds',mIds);
+				console.log('mIds',checkMappingUserQuery);
 				//console.log('currMapingDatas',currMapingDatas);
 				Usermap.app.dbConnection.execute(checkMappingUserQuery,[],(err,resultQDatas)=>{
 						//console.log('err',err);
