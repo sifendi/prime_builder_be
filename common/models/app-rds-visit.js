@@ -178,18 +178,201 @@ module.exports = function(Rdsvisit) {
 			if(!page){ page = 0; }
 			var offset = page*limit;
 		}
-		var sqlQuery = "SELECT Regional,NamaAC,Distrik,NamaSPH,TanggalFilter,TanggalKunjungan,GPSin,TanggalOut,GPSout,TipeProyek,TipeVisit,NamaTempat,Alamat,NamaPB,NoHP,PBStatus,Keterangan,SUM(quantity_required) as quantity_required FROM (SELECT Regional,NamaAC,Distrik,NamaSPH,tglfilter TanggalFilter,TGLin TanggalKunjungan,isNULL( GPSin, '-' ) GPSin,TGLout TanggalOut,isNULL( GPSout, '-' ) GPSout,check_in_out_type TipeProyek,CASE WHEN check_in_out_type = 'project' THEN 'Visit Proyek' ELSE 'Visit Toko' END AS TipeVisit,rds_name + '' + project_name AS NamaTempat,rds_address + '' + project_address Alamat,hpb_name NamaPB,primary_mobile_no NoHP,hpb_status PBStatus,CAST(ISNULL(check_in_out_comment, '-') AS VARCHAR(MAX)) AS Keterangan,project_quantity_estimation,quantity_required FROM (SELECT [check_in_out_id],check_in_datetime,[check_in_out_user_id],[check_in_out_type],[check_in_out_type_id],rds_name,REPLACE( rds_address, CHAR ( 10 ), ' ' ) AS rds_address,'' AS project_quantity_estimation,'' AS hpb_name,'' AS primary_mobile_no,'' AS hpb_status,'' AS project_name,'' AS project_address,'' AS quantity_required,CONVERT (VARCHAR,( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ),103 ) AS tglfilter,[check_in_latitude] + ',' + [check_in_longitude] AS GPSin,( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLin,[check_out_latitude] + ',' + [check_out_longitude] AS GPSout,( ( ( ( check_out_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLout,[check_in_out_comment] FROM[check_in_out_tbl],( SELECT [id], [holcim_id], [rds_name], [rds_type], [rds_address] FROM [retailer_distributor_master] ) AS RDS WHERE check_in_out_type <> 'project' AND RDS.id= check_in_out_type_id UNION ALL SELECT [check_in_out_id],check_in_datetime,[check_in_out_user_id],[check_in_out_type],[check_in_out_type_id],'' AS rds_name,'' AS rds_address,project_quantity_estimation,hpb_name,primary_mobile_no,hpb_status,project_name,REPLACE( project_address, CHAR ( 10 ), ' ' ) AS alamat_proyek,quantity_required,CONVERT (VARCHAR,( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ),103 ) AS tglfilter,[check_in_latitude] + ',' + [check_in_longitude] AS GPSin,( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLin,[check_out_latitude] + ',' + [check_out_longitude] AS GPSout,( ( ( ( check_out_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLout,[check_in_out_comment] FROM [check_in_out_tbl],(SELECT prj.project_id, HPB.hpb_id, HPB.hpb_name, HPB.primary_mobile_no,hpb_status,[project_name],[project_address],[project_province],[project_city],[project_sub_district],[project_pincode],[project_quantity_estimation],[quantity_required] FROM [projects_tbl] prj JOIN products_request_tbl prt ON prt.project_id = prj.project_id LEFT JOIN ( SELECT [hpb_id], [uid], [hpb_name], [hpb_type], [primary_mobile_no], [hpb_status] FROM [hpb_info_tbl] WHERE hpb_info_tbl.status= '1' ) AS HPB ON prj.hpb_id= HPB.hpb_id ) AS proyek WHERE check_in_out_type = 'project' AND proyek.project_id= check_in_out_type_id AND proyek.project_id = '71') AS Cek,( SELECT DISTINCT userID, realm AS namaSPH,regional,DistrikID,distrik,NamaAC FROM ( SELECT us.id userID, us.realm, um.meta_key, um.meta_value poscode FROM[User] us,[user_mapping] um WHERE us.id= um.uid AND meta_key = 'postal_code' ) AS SPH,(SELECT reg.name regional,dist.id DistrikID,dist.name distrik,city.name kota,kec.name kecamatan,pos.id posid,pos.postal_code kodepos FROM region reg, province prov,district dist, municipality city,subdistrict kec,postal_code pos WHERE reg.id= prov.region_id AND prov.id= dist.province_id AND dist.id= city.district_id AND city.id= kec.municipality_id AND kec.id = pos.subdistrict_id ) AS MapArea,(SELECT DISTINCT principalid FROM [User] u,Role r,RoleMapping rm WHERE r.id = rm.roleId AND u.id = rm.principalId AND r.name = '$sph' AND u.status= '1' ) AS UR,(SELECT us.realm NamaAC, um.meta_key, um.meta_value ACID FROM [User] us,[user_mapping] um WHERE us.id= um.uid AND meta_key = 'district_id' AND us.status= '1' ) AS AC WHERE SPH.poscode= MapArea.posid AND UR.principalid= SPH.userID AND MapArea.DistrikID= AC.ACID ) AS SPHku WHERE Cek.check_in_out_user_id= SPHku.userID ) AS ALLDATA GROUP BY Regional,NamaAC,Distrik,NamaSPH,TanggalFilter,TanggalKunjungan,		GPSin,TanggalOut,GPSout,TipeProyek,TipeVisit,NamaTempat,Alamat,NamaPB,NoHP,PBStatus,Keterangan";
+		var sqlQuery = "SELECT Regional, "+
+		"NamaAC, "+
+		"Distrik, "+
+		"NamaSPH, "+
+		"tglfilter TanggalFilter, "+
+		"TGLin TanggalKunjungan, "+
+		"isNULL( GPSin, '-' ) GPSin, "+
+		"TGLout TanggalOut, "+
+		"isNULL( GPSout, '-' ) GPSout, "+
+		"check_in_out_type TipeProyek, "+
+		"rds_address + '' + project_address Alamat, "+
+		"rds_name + '' + project_name AS NamaTempat, "+
+		"hpb_id, "+
+		"quantity_required, "+
+		"hpb_name NamaPB, "+
+		"primary_mobile_no NoHP, "+
+		"hpb_status PBStatus, "+
+		"isNULL( check_in_out_comment, '-' ) Keterangan  FROM	( "+
+		"SELECT "+
+		"[check_in_out_id], "+
+		"check_in_datetime, "+
+		"[check_in_out_user_id], "+
+		"[check_in_out_type], "+
+		"[check_in_out_type_id], "+
+		"rds_name, "+
+		"REPLACE( rds_address, CHAR ( 10 ), ' ' ) AS rds_address, "+
+		"'' hpb_id, "+
+		"'' quantity_required, "+
+		"'' AS hpb_name, "+
+		"'' AS primary_mobile_no, "+
+		"'' AS hpb_status, "+
+		"'' AS project_name, "+
+		"'' AS project_address, "+
+		"CONVERT ( "+
+			"VARCHAR, "+
+			"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ), "+
+			"103  "+
+		") AS tglfilter, "+
+		"[check_in_latitude] + ',' + [check_in_longitude] AS GPSin, "+
+		"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLin, "+
+		"[check_out_latitude] + ',' + [check_out_longitude] AS GPSout, "+
+		"( ( ( ( check_out_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLout, "+
+		"[check_in_out_comment]  "+
+	"FROM "+
+		"[check_in_out_tbl], "+
+		"( SELECT [id], [holcim_id], [rds_name], [rds_type], [rds_address] FROM [retailer_distributor_master] ) AS RDS  "+
+	"WHERE "+
+		"check_in_out_type <> 'project'  "+
+		"AND RDS.id= check_in_out_type_id UNION ALL "+
+	"SELECT "+
+		"[check_in_out_id], "+
+		"check_in_datetime, "+
+		"[check_in_out_user_id], "+
+		"[check_in_out_type], "+
+		"[check_in_out_type_id], "+
+		"'' AS rds_name, "+
+		"'' AS rds_address, "+
+		"proyek.hpb_id, "+
+		"prt.quantity_required, "+
+		"hpb_name, "+
+		"primary_mobile_no, "+
+		"hpb_status, "+
+		"project_name, "+
+		"REPLACE( project_address, CHAR ( 10 ), ' ' ) AS alamat_proyek, "+
+		"CONVERT ( "+
+			"VARCHAR, "+
+			"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ), "+
+			"103  "+
+		") AS tglfilter, "+
+		"[check_in_latitude] + ',' + [check_in_longitude] AS GPSin, "+
+		"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLin, "+
+		"[check_out_latitude] + ',' + [check_out_longitude] AS GPSout, "+
+		"( ( ( ( check_out_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLout, "+
+		"[check_in_out_comment]  "+
+	"FROM "+
+		"[check_in_out_tbl], "+
+		"( "+
+		"SELECT "+
+			"[project_id], "+
+			"HPB.hpb_id, "+
+			"HPB.hpb_name, "+
+			"HPB.primary_mobile_no, "+
+			"hpb_status, "+
+			"[project_name], "+
+			"[project_address], "+
+			"[project_province], "+
+			"[project_city], "+
+			"[project_sub_district], "+
+			"[project_pincode]  "+
+		"FROM "+
+			"[projects_tbl] prj "+
+			"LEFT JOIN ( SELECT [hpb_id], [uid], [hpb_name], [hpb_type], [primary_mobile_no], [hpb_status] FROM [hpb_info_tbl] WHERE hpb_info_tbl.status= '1' ) AS HPB ON prj.hpb_id= HPB.hpb_id  "+
+		") AS proyek  "+
+		"LEFT JOIN products_request_tbl AS prt ON prt.project_id=proyek.project_id AND prt.hpb_id=proyek.hpb_id "+ 
+	"WHERE "+
+		"check_in_out_type = 'project'  "+
+		"AND proyek.project_id= check_in_out_type_id "+
+	") AS Cek, "+
+	"( "+
+	"SELECT DISTINCT "+
+		"userID, "+
+		"realm AS namaSPH, "+
+		"regional, "+
+		"DistrikID, "+
+		"distrik, "+
+		"NamaAC  "+
+"	FROM "+
+		"( "+
+		"SELECT "+
+			"us.id userID, "+
+			"us.realm, "+
+			"um.meta_key, "+
+			"um.meta_value poscode  "+
+		"FROM "+
+			"[User] us, "+
+			"[user_mapping] um  "+
+		"WHERE "+
+			"us.id= um.uid  "+
+			"AND meta_key = 'postal_code'  "+
+		") AS SPH, "+
+		"( "+
+		"SELECT "+
+			"reg.name regional, "+
+			"dist.id DistrikID, "+
+			"dist.name distrik, "+
+			"city.name kota, "+
+			"kec.name kecamatan, "+
+			"pos.id posid, "+
+			"pos.postal_code kodepos  "+
+		"FROM "+
+			"region reg, "+
+			"province prov, "+
+			"district dist, "+
+			"municipality city, "+
+			"subdistrict kec, "+
+			"postal_code pos  "+
+		"WHERE "+
+			"reg.id= prov.region_id  "+
+			"AND prov.id= dist.province_id  "+
+			"AND dist.id= city.district_id  "+
+			"AND city.id= kec.municipality_id  "+
+			"AND kec.id = pos.subdistrict_id  "+
+		") AS MapArea, "+
+		"( "+
+		"SELECT DISTINCT "+
+			"principalid  "+
+		"FROM "+
+			"[User] u, "+
+			"Role r, "+
+			"RoleMapping rm  "+
+		"WHERE "+
+			"r.id = rm.roleId  "+
+			"AND u.id = rm.principalId  "+
+			"AND r.name = '$sph'  "+
+			"AND u.status= '1'  "+
+		") AS UR, "+
+		"( "+
+		"SELECT "+
+			"us.realm NamaAC, "+
+			"um.meta_key, "+
+			"um.meta_value ACID  "+
+		"FROM "+
+			"[User] us, "+
+			"[user_mapping] um  "+
+		"WHERE "+
+			"us.id= um.uid  "+
+			"AND meta_key = 'district_id'  "+
+			"AND us.status= '1'  "+
+		") AS AC  "+
+	"WHERE "+
+		"SPH.poscode= MapArea.posid  "+
+		"AND UR.principalid= SPH.userID  "+
+		"AND MapArea.DistrikID= AC.ACID  "+
+	") AS SPHku  "+
+"WHERE "+
+	"Cek.check_in_out_user_id= SPHku.userID ";
+
 		var dataArr = [];
-		
+
+		sqlQuery += "AND ( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) >= (?)";
+
+		dataArr.push('2019-12-01');
 		
 
-		sqlQuery+=" ORDER BY TanggalKunjungan DESC";
+		sqlQuery+=" ORDER BY tglfilter DESC ";
 
 		if(limit){
 			sqlQuery+=" OFFSET (?) ROWS FETCH NEXT (?) ROWS ONLY";
 			dataArr.push(offset);
 			dataArr.push(limit);
 		}
+		dataArr.push(created_date);
+		console.log(sqlQuery);
+		console.log(dataArr);
+
 		Rdsvisit.app.dbConnection.execute(sqlQuery,dataArr,(err,resultObj)=>{
 			cb(err,resultObj);
 		})
@@ -216,6 +399,230 @@ module.exports = function(Rdsvisit) {
 		returns:{ arg: 'result', type: 'object' }
 	});
 	
+	Rdsvisit.getRdsVisitDownload = function(rds_visit_id,rds_id,created_date,created_by,updated_date,updated_by,limit,page,user_id,rolename,rdsName,rdsType,visitDateFrom,visitDateTo,rds_start,rds_total,cb){
+		if(limit){
+			if(!page){ page = 0; }
+			var offset = page*limit;
+		}
+		var sqlQuery = "SELECT Regional, "+
+		"NamaAC, "+
+		"Distrik, "+
+		"NamaSPH, "+
+		"tglfilter TanggalFilter, "+
+		"TGLin TanggalKunjungan, "+
+		"isNULL( GPSin, '-' ) GPSin, "+
+		"TGLout TanggalOut, "+
+		"isNULL( GPSout, '-' ) GPSout, "+
+		"check_in_out_type TipeProyek, "+
+		"rds_address + '' + project_address Alamat, "+
+		"rds_name + '' + project_name AS NamaTempat, "+
+		"hpb_id, "+
+		"quantity_required, "+
+		"hpb_name NamaPB, "+
+		"primary_mobile_no NoHP, "+
+		"hpb_status PBStatus, "+
+		"isNULL( check_in_out_comment, '-' ) Keterangan  FROM	( "+
+		"SELECT "+
+		"[check_in_out_id], "+
+		"check_in_datetime, "+
+		"[check_in_out_user_id], "+
+		"[check_in_out_type], "+
+		"[check_in_out_type_id], "+
+		"rds_name, "+
+		"REPLACE( rds_address, CHAR ( 10 ), ' ' ) AS rds_address, "+
+		"'' hpb_id, "+
+		"'' quantity_required, "+
+		"'' AS hpb_name, "+
+		"'' AS primary_mobile_no, "+
+		"'' AS hpb_status, "+
+		"'' AS project_name, "+
+		"'' AS project_address, "+
+		"CONVERT ( "+
+			"VARCHAR, "+
+			"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ), "+
+			"103  "+
+		") AS tglfilter, "+
+		"[check_in_latitude] + ',' + [check_in_longitude] AS GPSin, "+
+		"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLin, "+
+		"[check_out_latitude] + ',' + [check_out_longitude] AS GPSout, "+
+		"( ( ( ( check_out_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLout, "+
+		"[check_in_out_comment]  "+
+	"FROM "+
+		"[check_in_out_tbl], "+
+		"( SELECT [id], [holcim_id], [rds_name], [rds_type], [rds_address] FROM [retailer_distributor_master] ) AS RDS  "+
+	"WHERE "+
+		"check_in_out_type <> 'project'  "+
+		"AND RDS.id= check_in_out_type_id UNION ALL "+
+	"SELECT "+
+		"[check_in_out_id], "+
+		"check_in_datetime, "+
+		"[check_in_out_user_id], "+
+		"[check_in_out_type], "+
+		"[check_in_out_type_id], "+
+		"'' AS rds_name, "+
+		"'' AS rds_address, "+
+		"proyek.hpb_id, "+
+		"prt.quantity_required, "+
+		"hpb_name, "+
+		"primary_mobile_no, "+
+		"hpb_status, "+
+		"project_name, "+
+		"REPLACE( project_address, CHAR ( 10 ), ' ' ) AS alamat_proyek, "+
+		"CONVERT ( "+
+			"VARCHAR, "+
+			"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ), "+
+			"103  "+
+		") AS tglfilter, "+
+		"[check_in_latitude] + ',' + [check_in_longitude] AS GPSin, "+
+		"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLin, "+
+		"[check_out_latitude] + ',' + [check_out_longitude] AS GPSout, "+
+		"( ( ( ( check_out_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLout, "+
+		"[check_in_out_comment]  "+
+	"FROM "+
+		"[check_in_out_tbl], "+
+		"( "+
+		"SELECT "+
+			"[project_id], "+
+			"HPB.hpb_id, "+
+			"HPB.hpb_name, "+
+			"HPB.primary_mobile_no, "+
+			"hpb_status, "+
+			"[project_name], "+
+			"[project_address], "+
+			"[project_province], "+
+			"[project_city], "+
+			"[project_sub_district], "+
+			"[project_pincode]  "+
+		"FROM "+
+			"[projects_tbl] prj "+
+			"LEFT JOIN ( SELECT [hpb_id], [uid], [hpb_name], [hpb_type], [primary_mobile_no], [hpb_status] FROM [hpb_info_tbl] WHERE hpb_info_tbl.status= '1' ) AS HPB ON prj.hpb_id= HPB.hpb_id  "+
+		") AS proyek  "+
+		"LEFT JOIN products_request_tbl AS prt ON prt.project_id=proyek.project_id AND prt.hpb_id=proyek.hpb_id "+ 
+	"WHERE "+
+		"check_in_out_type = 'project'  "+
+		"AND proyek.project_id= check_in_out_type_id "+
+	") AS Cek, "+
+	"( "+
+	"SELECT DISTINCT "+
+		"userID, "+
+		"realm AS namaSPH, "+
+		"regional, "+
+		"DistrikID, "+
+		"distrik, "+
+		"NamaAC  "+
+"	FROM "+
+		"( "+
+		"SELECT "+
+			"us.id userID, "+
+			"us.realm, "+
+			"um.meta_key, "+
+			"um.meta_value poscode  "+
+		"FROM "+
+			"[User] us, "+
+			"[user_mapping] um  "+
+		"WHERE "+
+			"us.id= um.uid  "+
+			"AND meta_key = 'postal_code'  "+
+		") AS SPH, "+
+		"( "+
+		"SELECT "+
+			"reg.name regional, "+
+			"dist.id DistrikID, "+
+			"dist.name distrik, "+
+			"city.name kota, "+
+			"kec.name kecamatan, "+
+			"pos.id posid, "+
+			"pos.postal_code kodepos  "+
+		"FROM "+
+			"region reg, "+
+			"province prov, "+
+			"district dist, "+
+			"municipality city, "+
+			"subdistrict kec, "+
+			"postal_code pos  "+
+		"WHERE "+
+			"reg.id= prov.region_id  "+
+			"AND prov.id= dist.province_id  "+
+			"AND dist.id= city.district_id  "+
+			"AND city.id= kec.municipality_id  "+
+			"AND kec.id = pos.subdistrict_id  "+
+		") AS MapArea, "+
+		"( "+
+		"SELECT DISTINCT "+
+			"principalid  "+
+		"FROM "+
+			"[User] u, "+
+			"Role r, "+
+			"RoleMapping rm  "+
+		"WHERE "+
+			"r.id = rm.roleId  "+
+			"AND u.id = rm.principalId  "+
+			"AND r.name = '$sph'  "+
+			"AND u.status= '1'  "+
+		") AS UR, "+
+		"( "+
+		"SELECT "+
+			"us.realm NamaAC, "+
+			"um.meta_key, "+
+			"um.meta_value ACID  "+
+		"FROM "+
+			"[User] us, "+
+			"[user_mapping] um  "+
+		"WHERE "+
+			"us.id= um.uid  "+
+			"AND meta_key = 'district_id'  "+
+			"AND us.status= '1'  "+
+		") AS AC  "+
+	"WHERE "+
+		"SPH.poscode= MapArea.posid  "+
+		"AND UR.principalid= SPH.userID  "+
+		"AND MapArea.DistrikID= AC.ACID  "+
+	") AS SPHku  "+
+"WHERE "+
+	"Cek.check_in_out_user_id= SPHku.userID ";
+
+		var dataArr = [];
+
+		sqlQuery += "AND ( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) >= (?)";
+
+		dataArr.push('2019-12-01');
+		
+
+		sqlQuery+=" ORDER BY tglfilter DESC ";
+
+		
+		sqlQuery+=" OFFSET (?) ROWS FETCH NEXT (?) ROWS ONLY";
+		dataArr.push(rds_start);
+		dataArr.push(rds_total);
+
+		Rdsvisit.app.dbConnection.execute(sqlQuery,dataArr,(err,resultObj)=>{
+			cb(err,resultObj);
+		})
+	}
+
+	Rdsvisit.remoteMethod('getRdsVisitDownload',{
+		http:{ path: '/getRdsVisitDownload', verb: 'get' },
+		accepts: [
+					{ arg: 'rds_visit_id', type: 'number', source:{http:'query'}},
+					{ arg: 'rds_id', type: 'number', source:{http:'query'}},
+					{ arg: 'created_date', type: 'number', source:{http:'query'}},
+					{ arg: 'created_by', type: 'number', source:{http:'query'}},
+					{ arg: 'updated_date', type: 'number', source:{http:'query'}},
+					{ arg: 'updated_by', type: 'number', source:{http:'query'}},
+					{ arg:'limit', type: 'number', source:{http:'query'}},
+					{ arg:'page', type: 'number', source:{http:'query'}},
+					{ arg: 'user_id', type: 'number', source: {http:'query' }},
+					{ arg: 'rolename', type: 'string', source: {http:'query' }},
+					{ arg: 'rdsName', type: 'string', source: {http:'query' }},
+					{ arg: 'rdsType', type: 'string', source: {http:'query' }},
+					{ arg: 'visitDateFrom', type: 'number', source: {http:'query' }},
+					{ arg: 'visitDateTo', type: 'number', source: {http:'query' }},
+					{ arg: 'rds_start', type: 'number', source: {http:'query' }},
+					{ arg: 'rds_total', type: 'number', source: {http:'query' }}
+				],
+		returns:{ arg: 'result', type: 'object' }
+	});
+
 	Rdsvisit.getRdsVisitCount_old = function(rds_visit_id,rds_id,created_date,created_by,updated_date,updated_by,limit,page,user_id,rolename,rdsName,rdsType,visitDateFrom,visitDateTo,cb){
 		if(limit){
 			if(!page){ page = 0; }
@@ -293,8 +700,170 @@ module.exports = function(Rdsvisit) {
 			var offset = page*limit;
 		}
 		
-		var sqlQuery = "SELECT COUNT(Regional) as total FROM (SELECT Regional FROM (SELECT Regional,NamaAC,Distrik,NamaSPH,tglfilter TanggalFilter,TGLin TanggalKunjungan,isNULL( GPSin, '-' ) GPSin,TGLout TanggalOut,isNULL( GPSout, '-' ) GPSout,check_in_out_type TipeProyek,CASE WHEN check_in_out_type = 'project' THEN 'Visit Proyek' ELSE 'Visit Toko' END AS TipeVisit,rds_name + '' + project_name AS NamaTempat,rds_address + '' + project_address Alamat,hpb_name NamaPB,primary_mobile_no NoHP,hpb_status PBStatus,CAST(ISNULL(check_in_out_comment, '-') AS VARCHAR(MAX)) AS Keterangan,project_quantity_estimation,quantity_required FROM (SELECT [check_in_out_id],check_in_datetime,[check_in_out_user_id],[check_in_out_type],[check_in_out_type_id],rds_name,REPLACE( rds_address, CHAR ( 10 ), ' ' ) AS rds_address,'' AS project_quantity_estimation,'' AS hpb_name,'' AS primary_mobile_no,'' AS hpb_status,'' AS project_name,'' AS project_address,'' AS quantity_required,CONVERT (VARCHAR,( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ),103 ) AS tglfilter,[check_in_latitude] + ',' + [check_in_longitude] AS GPSin,( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLin,[check_out_latitude] + ',' + [check_out_longitude] AS GPSout,( ( ( ( check_out_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLout,[check_in_out_comment] FROM[check_in_out_tbl],( SELECT [id], [holcim_id], [rds_name], [rds_type], [rds_address] FROM [retailer_distributor_master] ) AS RDS WHERE check_in_out_type <> 'project' AND RDS.id= check_in_out_type_id UNION ALL SELECT[check_in_out_id],check_in_datetime,[check_in_out_user_id],[check_in_out_type],[check_in_out_type_id],'' AS rds_name,'' AS rds_address,project_quantity_estimation,hpb_name,primary_mobile_no,hpb_status,project_name,REPLACE( project_address, CHAR ( 10 ), ' ' ) AS alamat_proyek,quantity_required,CONVERT (VARCHAR,( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ),103 ) AS tglfilter,[check_in_latitude] + ',' + [check_in_longitude] AS GPSin,( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLin,[check_out_latitude] + ',' + [check_out_longitude] AS GPSout,( ( ( ( check_out_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLout,[check_in_out_comment] FROM [check_in_out_tbl],(SELECT prj.project_id, HPB.hpb_id, HPB.hpb_name, HPB.primary_mobile_no,hpb_status,[project_name],[project_address],[project_province],[project_city],[project_sub_district],[project_pincode],[project_quantity_estimation],[quantity_required] FROM [projects_tbl] prj JOIN products_request_tbl prt ON prt.project_id = prj.project_id LEFT JOIN ( SELECT [hpb_id], [uid], [hpb_name], [hpb_type], [primary_mobile_no], [hpb_status] FROM [hpb_info_tbl] WHERE hpb_info_tbl.status= '1' ) AS HPB ON prj.hpb_id= HPB.hpb_id ) AS proyek WHERE check_in_out_type = 'project' AND proyek.project_id= check_in_out_type_id AND proyek.project_id = '71') AS Cek,( SELECT DISTINCT userID, realm AS namaSPH,regional,DistrikID,distrik,NamaAC FROM ( SELECT us.id userID, us.realm, um.meta_key, um.meta_value poscode FROM[User] us,[user_mapping] um WHERE us.id= um.uid AND meta_key = 'postal_code' ) AS SPH,(SELECT reg.name regional,dist.id DistrikID,dist.name distrik,city.name kota,kec.name kecamatan,pos.id posid,pos.postal_code kodepos FROM region reg, province prov,district dist, municipality city,subdistrict kec,postal_code pos WHERE reg.id= prov.region_id AND prov.id= dist.province_id AND dist.id= city.district_id AND city.id= kec.municipality_id AND kec.id = pos.subdistrict_id ) AS MapArea,(SELECT DISTINCT principalid FROM [User] u,Role r,RoleMapping rm WHERE r.id = rm.roleId AND u.id = rm.principalId AND r.name = '$sph' AND u.status= '1' ) AS UR,(SELECT us.realm NamaAC, um.meta_key, um.meta_value ACID FROM [User] us,[user_mapping] um WHERE us.id= um.uid AND meta_key = 'district_id' AND us.status= '1' ) AS AC WHERE SPH.poscode= MapArea.posid AND UR.principalid= SPH.userID AND MapArea.DistrikID= AC.ACID ) AS SPHku WHERE Cek.check_in_out_user_id= SPHku.userID ";
+		var sqlQuery = "SELECT COUNT(Regional) as total FROM	( "+
+		"SELECT "+
+		"[check_in_out_id], "+
+		"check_in_datetime, "+
+		"[check_in_out_user_id], "+
+		"[check_in_out_type], "+
+		"[check_in_out_type_id], "+
+		"rds_name, "+
+		"REPLACE( rds_address, CHAR ( 10 ), ' ' ) AS rds_address, "+
+		"'' hpb_id, "+
+		"'' quantity_required, "+
+		"'' AS hpb_name, "+
+		"'' AS primary_mobile_no, "+
+		"'' AS hpb_status, "+
+		"'' AS project_name, "+
+		"'' AS project_address, "+
+		"CONVERT ( "+
+			"VARCHAR, "+
+			"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ), "+
+			"103  "+
+		") AS tglfilter, "+
+		"[check_in_latitude] + ',' + [check_in_longitude] AS GPSin, "+
+		"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLin, "+
+		"[check_out_latitude] + ',' + [check_out_longitude] AS GPSout, "+
+		"( ( ( ( check_out_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLout, "+
+		"[check_in_out_comment]  "+
+	"FROM "+
+		"[check_in_out_tbl], "+
+		"( SELECT [id], [holcim_id], [rds_name], [rds_type], [rds_address] FROM [retailer_distributor_master] ) AS RDS  "+
+	"WHERE "+
+		"check_in_out_type <> 'project'  "+
+		"AND RDS.id= check_in_out_type_id UNION ALL "+
+	"SELECT "+
+		"[check_in_out_id], "+
+		"check_in_datetime, "+
+		"[check_in_out_user_id], "+
+		"[check_in_out_type], "+
+		"[check_in_out_type_id], "+
+		"'' AS rds_name, "+
+		"'' AS rds_address, "+
+		"proyek.hpb_id, "+
+		"prt.quantity_required, "+
+		"hpb_name, "+
+		"primary_mobile_no, "+
+		"hpb_status, "+
+		"project_name, "+
+		"REPLACE( project_address, CHAR ( 10 ), ' ' ) AS alamat_proyek, "+
+		"CONVERT ( "+
+			"VARCHAR, "+
+			"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ), "+
+			"103  "+
+		") AS tglfilter, "+
+		"[check_in_latitude] + ',' + [check_in_longitude] AS GPSin, "+
+		"( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLin, "+
+		"[check_out_latitude] + ',' + [check_out_longitude] AS GPSout, "+
+		"( ( ( ( check_out_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) AS TGLout, "+
+		"[check_in_out_comment]  "+
+	"FROM "+
+		"[check_in_out_tbl], "+
+		"( "+
+		"SELECT "+
+			"[project_id], "+
+			"HPB.hpb_id, "+
+			"HPB.hpb_name, "+
+			"HPB.primary_mobile_no, "+
+			"hpb_status, "+
+			"[project_name], "+
+			"[project_address], "+
+			"[project_province], "+
+			"[project_city], "+
+			"[project_sub_district], "+
+			"[project_pincode]  "+
+		"FROM "+
+			"[projects_tbl] prj "+
+			"LEFT JOIN ( SELECT [hpb_id], [uid], [hpb_name], [hpb_type], [primary_mobile_no], [hpb_status] FROM [hpb_info_tbl] WHERE hpb_info_tbl.status= '1' ) AS HPB ON prj.hpb_id= HPB.hpb_id  "+
+		") AS proyek  "+
+		"LEFT JOIN products_request_tbl AS prt ON prt.project_id=proyek.project_id AND prt.hpb_id=proyek.hpb_id "+ 
+	"WHERE "+
+		"check_in_out_type = 'project'  "+
+		"AND proyek.project_id= check_in_out_type_id "+
+	") AS Cek, "+
+	"( "+
+	"SELECT DISTINCT "+
+		"userID, "+
+		"realm AS namaSPH, "+
+		"regional, "+
+		"DistrikID, "+
+		"distrik, "+
+		"NamaAC  "+
+"	FROM "+
+		"( "+
+		"SELECT "+
+			"us.id userID, "+
+			"us.realm, "+
+			"um.meta_key, "+
+			"um.meta_value poscode  "+
+		"FROM "+
+			"[User] us, "+
+			"[user_mapping] um  "+
+		"WHERE "+
+			"us.id= um.uid  "+
+			"AND meta_key = 'postal_code'  "+
+		") AS SPH, "+
+		"( "+
+		"SELECT "+
+			"reg.name regional, "+
+			"dist.id DistrikID, "+
+			"dist.name distrik, "+
+			"city.name kota, "+
+			"kec.name kecamatan, "+
+			"pos.id posid, "+
+			"pos.postal_code kodepos  "+
+		"FROM "+
+			"region reg, "+
+			"province prov, "+
+			"district dist, "+
+			"municipality city, "+
+			"subdistrict kec, "+
+			"postal_code pos  "+
+		"WHERE "+
+			"reg.id= prov.region_id  "+
+			"AND prov.id= dist.province_id  "+
+			"AND dist.id= city.district_id  "+
+			"AND city.id= kec.municipality_id  "+
+			"AND kec.id = pos.subdistrict_id  "+
+		") AS MapArea, "+
+		"( "+
+		"SELECT DISTINCT "+
+			"principalid  "+
+		"FROM "+
+			"[User] u, "+
+			"Role r, "+
+			"RoleMapping rm  "+
+		"WHERE "+
+			"r.id = rm.roleId  "+
+			"AND u.id = rm.principalId  "+
+			"AND r.name = '$sph'  "+
+			"AND u.status= '1'  "+
+		") AS UR, "+
+		"( "+
+		"SELECT "+
+			"us.realm NamaAC, "+
+			"um.meta_key, "+
+			"um.meta_value ACID  "+
+		"FROM "+
+			"[User] us, "+
+			"[user_mapping] um  "+
+		"WHERE "+
+			"us.id= um.uid  "+
+			"AND meta_key = 'district_id'  "+
+			"AND us.status= '1'  "+
+		") AS AC  "+
+	"WHERE "+
+		"SPH.poscode= MapArea.posid  "+
+		"AND UR.principalid= SPH.userID  "+
+		"AND MapArea.DistrikID= AC.ACID  "+
+	") AS SPHku  "+
+"WHERE "+
+	"Cek.check_in_out_user_id= SPHku.userID  ";
+	
 		var dataArr = [];
+		sqlQuery += "AND ( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) >= (?)";
+
+		dataArr.push('2019-12-01');
 		
 		
 		if(rdsType){
@@ -307,9 +876,11 @@ module.exports = function(Rdsvisit) {
 			rdsType="project";
 			dataArr.push(rdsType);
 		}
-		sqlQuery += " ) AS ALLDATA  GROUP BY Regional,NamaAC,Distrik,NamaSPH,TanggalFilter,TanggalKunjungan,		GPSin,TanggalOut,GPSout,TipeProyek,TipeVisit,NamaTempat,Alamat,NamaPB,NoHP,PBStatus,Keterangan) AS HITUNG";
 
-		Rdsvisit.app.dbConnection.execute(sqlQuery,(err,resultObj)=>{
+		dataArr.push(created_date);
+		// console.log(sqlQuery);
+	
+		Rdsvisit.app.dbConnection.execute(sqlQuery,dataArr,(err,resultObj)=>{
 			cb(err,resultObj);
 		})
 	}

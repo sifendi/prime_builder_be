@@ -7,7 +7,7 @@
     "host": "10.15.202.52",
     "port": 1433,
     "url": "",
-    "database": "holcim_hpb2_dev",
+    "database": "holcim_hpb2",
     "password": "Indonesia1",
     "name": "accountDS",
     "user": "accountDS",
