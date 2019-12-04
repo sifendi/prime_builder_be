@@ -359,7 +359,7 @@ module.exports = function(Rdsvisit) {
 
 		sqlQuery += "AND ( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) >= (?)";
 
-		dataArr.push('2019-12-01');
+		dataArr.push(visitDateFrom);
 		
 
 		sqlQuery+=" ORDER BY tglfilter DESC ";
@@ -369,7 +369,7 @@ module.exports = function(Rdsvisit) {
 			dataArr.push(offset);
 			dataArr.push(limit);
 		}
-		dataArr.push(created_date);
+		
 		console.log(sqlQuery);
 		console.log(dataArr);
 
@@ -393,8 +393,8 @@ module.exports = function(Rdsvisit) {
 					{ arg: 'rolename', type: 'string', source: {http:'query' }},
 					{ arg: 'rdsName', type: 'string', source: {http:'query' }},
 					{ arg: 'rdsType', type: 'string', source: {http:'query' }},
-					{ arg: 'visitDateFrom', type: 'number', source: {http:'query' }},
-					{ arg: 'visitDateTo', type: 'number', source: {http:'query' }}
+					{ arg: 'visitDateFrom', type: 'string', source: {http:'query' }},
+					{ arg: 'visitDateTo', type: 'string', source: {http:'query' }}
 				],
 		returns:{ arg: 'result', type: 'object' }
 	});
@@ -585,12 +585,12 @@ module.exports = function(Rdsvisit) {
 
 		sqlQuery += "AND ( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) >= (?)";
 
-		dataArr.push('2019-12-01');
+		dataArr.push(visitDateFrom);
 		
 
 		sqlQuery+=" ORDER BY tglfilter DESC ";
 
-		
+		rds_start=rds_start-1;
 		sqlQuery+=" OFFSET (?) ROWS FETCH NEXT (?) ROWS ONLY";
 		dataArr.push(rds_start);
 		dataArr.push(rds_total);
@@ -615,8 +615,8 @@ module.exports = function(Rdsvisit) {
 					{ arg: 'rolename', type: 'string', source: {http:'query' }},
 					{ arg: 'rdsName', type: 'string', source: {http:'query' }},
 					{ arg: 'rdsType', type: 'string', source: {http:'query' }},
-					{ arg: 'visitDateFrom', type: 'number', source: {http:'query' }},
-					{ arg: 'visitDateTo', type: 'number', source: {http:'query' }},
+					{ arg: 'visitDateFrom', type: 'string', source: {http:'query' }},
+					{ arg: 'visitDateTo', type: 'string', source: {http:'query' }},
 					{ arg: 'rds_start', type: 'number', source: {http:'query' }},
 					{ arg: 'rds_total', type: 'number', source: {http:'query' }}
 				],
@@ -863,7 +863,7 @@ module.exports = function(Rdsvisit) {
 		var dataArr = [];
 		sqlQuery += "AND ( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) >= (?)";
 
-		dataArr.push('2019-12-01');
+		dataArr.push(visitDateFrom);
 		
 		
 		if(rdsType){
@@ -890,9 +890,9 @@ module.exports = function(Rdsvisit) {
 		accepts: [
 					{ arg: 'rds_visit_id', type: 'number', source:{http:'query'}},
 					{ arg: 'rds_id', type: 'number', source:{http:'query'}},
-					{ arg: 'created_date', type: 'number', source:{http:'query'}},
+					{ arg: 'created_date', type: 'string', source:{http:'query'}},
 					{ arg: 'created_by', type: 'number', source:{http:'query'}},
-					{ arg: 'updated_date', type: 'number', source:{http:'query'}},
+					{ arg: 'updated_date', type: 'string', source:{http:'query'}},
 					{ arg: 'updated_by', type: 'number', source:{http:'query'}},
 					{ arg:'limit', type: 'number', source:{http:'query'}},
 					{ arg:'page', type: 'number', source:{http:'query'}},
@@ -900,8 +900,8 @@ module.exports = function(Rdsvisit) {
 					{ arg: 'rolename', type: 'string', source: {http:'query' }},
 					{ arg: 'rdsName', type: 'string', source: {http:'query' }},
 					{ arg: 'rdsType', type: 'string', source: {http:'query' }},
-					{ arg: 'visitDateFrom', type: 'number', source: {http:'query' }},
-					{ arg: 'visitDateTo', type: 'number', source: {http:'query' }}
+					{ arg: 'visitDateFrom', type: 'string', source: {http:'query' }},
+					{ arg: 'visitDateTo', type: 'string', source: {http:'query' }}
 				],
 		returns:{ arg: 'result', type: 'object' }
 	});

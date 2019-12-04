@@ -19,7 +19,7 @@
       "type": "number"
     },
     "visit_date": {
-      "type": "number"
+      "type": "string"
     },
     "additional_comments": {
       "type": "string"
@@ -31,16 +31,16 @@
       "type": "string"
     },
     "created_date": {
-      "type": "number"
+      "type": "string"
     },
     "created_by": {
-      "type": "number"
+      "type": "string"
     },
     "updated_date": {
-      "type": "number"
+      "type": "string"
     },
     "updated_by": {
-      "type": "number"
+      "type": "string"
     }
   },
   "validations": [],

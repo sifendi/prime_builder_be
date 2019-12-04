@@ -18,7 +18,7 @@
     "connector": "loopback-component-storage",
     "provider": "filesystem",
     "root_": "server/storage",
-    "root": "D:/APP/LOOPBACK/prime_builder_be/server/storage",
+    "root": "/Users/vi/Documents/APP/prime_builder_be/server/storage",
     "allowedContentTypes": [
       "image/gif",
       "image/jpeg",
