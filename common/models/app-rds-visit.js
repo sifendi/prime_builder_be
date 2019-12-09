@@ -166,7 +166,6 @@ module.exports = function(Rdsvisit) {
 			dataArr.push(offset);
 			dataArr.push(limit);
 		}
-		console.log(sqlQuery);
 		Rdsvisit.app.dbConnection.execute(sqlQuery,dataArr,(err,resultObj)=>{
 			cb(err,resultObj);
 		})
@@ -191,7 +190,6 @@ module.exports = function(Rdsvisit) {
 		"rds_address + '' + project_address Alamat, "+
 		"rds_name + '' + project_name AS NamaTempat, "+
 		"hpb_id, "+
-		"quantity_required, "+
 		"hpb_name NamaPB, "+
 		"primary_mobile_no NoHP, "+
 		"hpb_status PBStatus, "+
@@ -205,7 +203,6 @@ module.exports = function(Rdsvisit) {
 		"rds_name, "+
 		"REPLACE( rds_address, CHAR ( 10 ), ' ' ) AS rds_address, "+
 		"'' hpb_id, "+
-		"'' quantity_required, "+
 		"'' AS hpb_name, "+
 		"'' AS primary_mobile_no, "+
 		"'' AS hpb_status, "+
@@ -236,7 +233,6 @@ module.exports = function(Rdsvisit) {
 		"'' AS rds_name, "+
 		"'' AS rds_address, "+
 		"proyek.hpb_id, "+
-		"prt.quantity_required, "+
 		"hpb_name, "+
 		"primary_mobile_no, "+
 		"hpb_status, "+
@@ -271,7 +267,6 @@ module.exports = function(Rdsvisit) {
 			"[projects_tbl] prj "+
 			"LEFT JOIN ( SELECT [hpb_id], [uid], [hpb_name], [hpb_type], [primary_mobile_no], [hpb_status] FROM [hpb_info_tbl] WHERE hpb_info_tbl.status= '1' ) AS HPB ON prj.hpb_id= HPB.hpb_id  "+
 		") AS proyek  "+
-		"LEFT JOIN products_request_tbl AS prt ON prt.project_id=proyek.project_id AND prt.hpb_id=proyek.hpb_id "+ 
 	"WHERE "+
 		"check_in_out_type = 'project'  "+
 		"AND proyek.project_id= check_in_out_type_id "+
@@ -360,8 +355,19 @@ module.exports = function(Rdsvisit) {
 		sqlQuery += "AND ( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) >= (?)";
 
 		dataArr.push(visitDateFrom);
-		
 
+		if(rdsType){
+			if(rdsType == 'visittoko')
+			{
+				sqlQuery+=" AND check_in_out_type !=  (?)";
+			}else{
+				sqlQuery+=" AND check_in_out_type =  (?)";
+			}
+			rdsType="project";
+			dataArr.push(rdsType);
+		}
+
+	
 		sqlQuery+=" ORDER BY tglfilter DESC ";
 
 		if(limit){
@@ -369,9 +375,7 @@ module.exports = function(Rdsvisit) {
 			dataArr.push(offset);
 			dataArr.push(limit);
 		}
-		
-		console.log(sqlQuery);
-		console.log(dataArr);
+	
 
 		Rdsvisit.app.dbConnection.execute(sqlQuery,dataArr,(err,resultObj)=>{
 			cb(err,resultObj);
@@ -383,9 +387,9 @@ module.exports = function(Rdsvisit) {
 		accepts: [
 					{ arg: 'rds_visit_id', type: 'number', source:{http:'query'}},
 					{ arg: 'rds_id', type: 'number', source:{http:'query'}},
-					{ arg: 'created_date', type: 'number', source:{http:'query'}},
-					{ arg: 'created_by', type: 'number', source:{http:'query'}},
-					{ arg: 'updated_date', type: 'number', source:{http:'query'}},
+					{ arg: 'created_date', type: 'string', source:{http:'query'}},
+					{ arg: 'created_by', type: 'string', source:{http:'query'}},
+					{ arg: 'updated_date', type: 'string', source:{http:'query'}},
 					{ arg: 'updated_by', type: 'number', source:{http:'query'}},
 					{ arg:'limit', type: 'number', source:{http:'query'}},
 					{ arg:'page', type: 'number', source:{http:'query'}},
@@ -417,7 +421,6 @@ module.exports = function(Rdsvisit) {
 		"rds_address + '' + project_address Alamat, "+
 		"rds_name + '' + project_name AS NamaTempat, "+
 		"hpb_id, "+
-		"quantity_required, "+
 		"hpb_name NamaPB, "+
 		"primary_mobile_no NoHP, "+
 		"hpb_status PBStatus, "+
@@ -431,7 +434,6 @@ module.exports = function(Rdsvisit) {
 		"rds_name, "+
 		"REPLACE( rds_address, CHAR ( 10 ), ' ' ) AS rds_address, "+
 		"'' hpb_id, "+
-		"'' quantity_required, "+
 		"'' AS hpb_name, "+
 		"'' AS primary_mobile_no, "+
 		"'' AS hpb_status, "+
@@ -462,7 +464,6 @@ module.exports = function(Rdsvisit) {
 		"'' AS rds_name, "+
 		"'' AS rds_address, "+
 		"proyek.hpb_id, "+
-		"prt.quantity_required, "+
 		"hpb_name, "+
 		"primary_mobile_no, "+
 		"hpb_status, "+
@@ -497,7 +498,6 @@ module.exports = function(Rdsvisit) {
 			"[projects_tbl] prj "+
 			"LEFT JOIN ( SELECT [hpb_id], [uid], [hpb_name], [hpb_type], [primary_mobile_no], [hpb_status] FROM [hpb_info_tbl] WHERE hpb_info_tbl.status= '1' ) AS HPB ON prj.hpb_id= HPB.hpb_id  "+
 		") AS proyek  "+
-		"LEFT JOIN products_request_tbl AS prt ON prt.project_id=proyek.project_id AND prt.hpb_id=proyek.hpb_id "+ 
 	"WHERE "+
 		"check_in_out_type = 'project'  "+
 		"AND proyek.project_id= check_in_out_type_id "+
@@ -586,7 +586,17 @@ module.exports = function(Rdsvisit) {
 		sqlQuery += "AND ( ( ( ( check_in_datetime / 1000 ) / 60 ) / 60 ) / 24 ) + CONVERT ( DATETIME, CAST ( '1970-01-01 07:00:00' AS VARCHAR ( 20 ) ), 120 ) >= (?)";
 
 		dataArr.push(visitDateFrom);
-		
+
+		if(rdsType){
+			if(rdsType == 'visittoko')
+			{
+				sqlQuery+=" AND check_in_out_type !=  (?)";
+			}else{
+				sqlQuery+=" AND check_in_out_type =  (?)";
+			}
+			rdsType="project";
+			dataArr.push(rdsType);
+		}
 
 		sqlQuery+=" ORDER BY tglfilter DESC ";
 
@@ -594,6 +604,7 @@ module.exports = function(Rdsvisit) {
 		sqlQuery+=" OFFSET (?) ROWS FETCH NEXT (?) ROWS ONLY";
 		dataArr.push(rds_start);
 		dataArr.push(rds_total);
+		console.log(dataArr);
 
 		Rdsvisit.app.dbConnection.execute(sqlQuery,dataArr,(err,resultObj)=>{
 			cb(err,resultObj);
@@ -605,7 +616,7 @@ module.exports = function(Rdsvisit) {
 		accepts: [
 					{ arg: 'rds_visit_id', type: 'number', source:{http:'query'}},
 					{ arg: 'rds_id', type: 'number', source:{http:'query'}},
-					{ arg: 'created_date', type: 'number', source:{http:'query'}},
+					{ arg: 'created_date', type: 'string', source:{http:'query'}},
 					{ arg: 'created_by', type: 'number', source:{http:'query'}},
 					{ arg: 'updated_date', type: 'number', source:{http:'query'}},
 					{ arg: 'updated_by', type: 'number', source:{http:'query'}},
@@ -710,7 +721,6 @@ module.exports = function(Rdsvisit) {
 		"rds_name, "+
 		"REPLACE( rds_address, CHAR ( 10 ), ' ' ) AS rds_address, "+
 		"'' hpb_id, "+
-		"'' quantity_required, "+
 		"'' AS hpb_name, "+
 		"'' AS primary_mobile_no, "+
 		"'' AS hpb_status, "+
@@ -741,7 +751,6 @@ module.exports = function(Rdsvisit) {
 		"'' AS rds_name, "+
 		"'' AS rds_address, "+
 		"proyek.hpb_id, "+
-		"prt.quantity_required, "+
 		"hpb_name, "+
 		"primary_mobile_no, "+
 		"hpb_status, "+
@@ -776,7 +785,6 @@ module.exports = function(Rdsvisit) {
 			"[projects_tbl] prj "+
 			"LEFT JOIN ( SELECT [hpb_id], [uid], [hpb_name], [hpb_type], [primary_mobile_no], [hpb_status] FROM [hpb_info_tbl] WHERE hpb_info_tbl.status= '1' ) AS HPB ON prj.hpb_id= HPB.hpb_id  "+
 		") AS proyek  "+
-		"LEFT JOIN products_request_tbl AS prt ON prt.project_id=proyek.project_id AND prt.hpb_id=proyek.hpb_id "+ 
 	"WHERE "+
 		"check_in_out_type = 'project'  "+
 		"AND proyek.project_id= check_in_out_type_id "+
@@ -869,16 +877,14 @@ module.exports = function(Rdsvisit) {
 		if(rdsType){
 			if(rdsType == 'visittoko')
 			{
-				sqlQuery+="AND check_in_out_type !=  (?)";
+				sqlQuery+=" AND check_in_out_type !=  (?)";
 			}else{
-				sqlQuery+="AND check_in_out_type =  (?)";
+				sqlQuery+=" AND check_in_out_type =  (?)";
 			}
 			rdsType="project";
 			dataArr.push(rdsType);
 		}
 
-		dataArr.push(created_date);
-		// console.log(sqlQuery);
 	
 		Rdsvisit.app.dbConnection.execute(sqlQuery,dataArr,(err,resultObj)=>{
 			cb(err,resultObj);
@@ -891,7 +897,7 @@ module.exports = function(Rdsvisit) {
 					{ arg: 'rds_visit_id', type: 'number', source:{http:'query'}},
 					{ arg: 'rds_id', type: 'number', source:{http:'query'}},
 					{ arg: 'created_date', type: 'string', source:{http:'query'}},
-					{ arg: 'created_by', type: 'number', source:{http:'query'}},
+					{ arg: 'created_by', type: 'string', source:{http:'query'}},
 					{ arg: 'updated_date', type: 'string', source:{http:'query'}},
 					{ arg: 'updated_by', type: 'number', source:{http:'query'}},
 					{ arg:'limit', type: 'number', source:{http:'query'}},
